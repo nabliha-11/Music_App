@@ -17,7 +17,6 @@ class _PlayerPageState extends State<PlayerPage> {
   final ValueNotifier<Duration> _positionNotifier = ValueNotifier(Duration.zero);
   final ValueNotifier<Duration> _durationNotifier = ValueNotifier(Duration.zero);
 
-
   @override
   void initState() {
     super.initState();
@@ -80,10 +79,11 @@ class _PlayerPageState extends State<PlayerPage> {
             ValueListenableBuilder<Duration>(
               valueListenable: _positionNotifier,
               builder: (context, position, child) {
+                final maxDuration = _durationNotifier.value;
                 return Slider(
                   min: 0,
-                  max: _durationNotifier.value.inMilliseconds.toDouble(),
-                  value: position.inMilliseconds.toDouble(),
+                  max: maxDuration.inMilliseconds.toDouble(),
+                  value: position.inMilliseconds.toDouble().clamp(0, maxDuration.inMilliseconds.toDouble()),
                   onChanged: (value) {
                     _seek(Duration(milliseconds: value.toInt()));
                   },
@@ -115,3 +115,4 @@ class _PlayerPageState extends State<PlayerPage> {
     );
   }
 }
+

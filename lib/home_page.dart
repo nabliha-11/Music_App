@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:music_try/models/track.dart';
 import 'package:music_try/services/api_service.dart';
@@ -23,21 +24,16 @@ class _HomePageState extends State<HomePage> {
       final tracksData = await ApiService.fetchTracks(query);
       setState(() {
         tracks = tracksData;
-        filteredTracks = tracksData;
+        filterTracks();
       });
     } catch (e) {
       print('Failed to fetch tracks: $e');
     }
   }
 
-  void filterTracks(String query) {
+  void filterTracks() {
     setState(() {
-      filteredTracks = tracks.where((track) {
-        final nameLower = track.name.toLowerCase();
-        final artistLower = track.artist.toLowerCase();
-        final searchLower = query.toLowerCase();
-        return nameLower.contains(searchLower) || artistLower.contains(searchLower);
-      }).toList();
+      filteredTracks = tracks;
     });
   }
 
@@ -59,7 +55,7 @@ class _HomePageState extends State<HomePage> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
-              onSubmitted: (query) => fetchTracks(query),
+              onChanged: (query) => fetchTracks(query),
               decoration: InputDecoration(
                 labelText: 'Search',
                 prefixIcon: Icon(Icons.search),
