@@ -15,7 +15,7 @@ class MusicApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => HomePage(),
-        '/player': (context){
+        '/player': (context) {
           final track = ModalRoute.of(context)!.settings.arguments as Track;
           return PlayerPage(track: track);
         },
