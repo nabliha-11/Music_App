@@ -38,6 +38,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void navigateToPlayerPage(Track track) {
+    print(track.audioUrl);
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => PlayerPage(track: track)),
