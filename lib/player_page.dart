@@ -15,9 +15,9 @@ class PlayerPage extends StatefulWidget {
 class _PlayerPageState extends State<PlayerPage> {
   final AudioPlayer audioPlayer = AudioPlayer();
   final ValueNotifier<Duration> _positionNotifier =
-      ValueNotifier(Duration.zero);
+  ValueNotifier(Duration.zero);
   final ValueNotifier<Duration> _durationNotifier =
-      ValueNotifier(Duration.zero);
+  ValueNotifier(Duration.zero);
   @override
   void initState() {
     super.initState();
@@ -116,4 +116,3 @@ class _PlayerPageState extends State<PlayerPage> {
     );
   }
 }
-
