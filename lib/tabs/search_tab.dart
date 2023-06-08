@@ -38,11 +38,19 @@ class _SearchTabState extends State<SearchTab> {
 
   void navigateToPlayerPage(Track track) {
     print(track.audioUrl);
+    final playlist = [track];
+    final initialTrackIndex = 0;
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => PlayerPage(track: track)),
+      MaterialPageRoute(
+        builder: (context) => PlayerPage(
+          playlist: playlist,
+          initialTrackIndex: initialTrackIndex,
+        ),
+      ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
