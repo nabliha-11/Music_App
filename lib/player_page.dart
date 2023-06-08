@@ -2,42 +2,52 @@ import 'package:flutter/material.dart';
 import 'package:music_try/models/track.dart';
 import 'package:music_try/services/audio_player_service.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:music_try/models/playlist.dart';
 
 class PlayerPage extends StatefulWidget {
-  final Track track;
+  final List<Track> playlist;
+  //final Playlist playlist;
+  final int initialTrackIndex;
 
-  const PlayerPage({required this.track});
+  const PlayerPage({
+    required this.playlist,
+    required this.initialTrackIndex,
+  });
 
   @override
   _PlayerPageState createState() => _PlayerPageState();
 }
 
 class _PlayerPageState extends State<PlayerPage> {
-  final AudioPlayer audioPlayer = AudioPlayer();
-  final ValueNotifier<Duration> _positionNotifier =
-  ValueNotifier(Duration.zero);
-  final ValueNotifier<Duration> _durationNotifier =
-  ValueNotifier(Duration.zero);
+  late AudioPlayer audioPlayer;
+  final ValueNotifier<Duration> _positionNotifier = ValueNotifier(Duration.zero);
+  final ValueNotifier<Duration> _durationNotifier = ValueNotifier(Duration.zero);
+  late int _currentTrackIndex;
+
   @override
   void initState() {
     super.initState();
+    audioPlayer = AudioPlayer();
     _initAudioPlayer();
-  }
-
-  void _initAudioPlayer() {
-    audioPlayer.setUrl(widget.track.audioUrl);
-    audioPlayer.durationStream.listen((duration) {
-      _durationNotifier.value = duration ?? Duration.zero;
-    });
-    audioPlayer.positionStream.listen((position) {
-      _positionNotifier.value = position ?? Duration.zero;
-    });
   }
 
   @override
   void dispose() {
     audioPlayer.dispose();
     super.dispose();
+  }
+
+  void _initAudioPlayer() async {
+    _currentTrackIndex = widget.initialTrackIndex;
+    final track = widget.playlist[_currentTrackIndex];
+
+    await audioPlayer.setUrl(track.audioUrl);
+    audioPlayer.durationStream.listen((duration) {
+      _durationNotifier.value = duration ?? Duration.zero;
+    });
+    audioPlayer.positionStream.listen((position) {
+      _positionNotifier.value = position ?? Duration.zero;
+    });
   }
 
   void _play() async {
@@ -56,8 +66,28 @@ class _PlayerPageState extends State<PlayerPage> {
     audioPlayer.seek(position);
   }
 
+  void _skipToNextTrack() {
+    if (_currentTrackIndex < widget.playlist.length - 1) {
+      _currentTrackIndex++;
+      final track = widget.playlist[_currentTrackIndex];
+      audioPlayer.setUrl(track.audioUrl);
+      audioPlayer.play();
+    }
+  }
+
+  void _skipToPreviousTrack() {
+    if (_currentTrackIndex > 0) {
+      _currentTrackIndex--;
+      final track = widget.playlist[_currentTrackIndex];
+      audioPlayer.setUrl(track.audioUrl);
+      audioPlayer.play();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final track = widget.playlist[_currentTrackIndex];
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Player'),
@@ -66,14 +96,14 @@ class _PlayerPageState extends State<PlayerPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.network(widget.track.albumArtwork),
+            Image.network(track.albumArtwork),
             SizedBox(height: 20),
             Text(
-              widget.track.name,
+              track.name,
               style: TextStyle(fontSize: 20),
             ),
             Text(
-              widget.track.artist,
+              track.artist,
               style: TextStyle(fontSize: 16),
             ),
             SizedBox(height: 20),
@@ -86,27 +116,37 @@ class _PlayerPageState extends State<PlayerPage> {
                   max: maxDuration.inMilliseconds.toDouble(),
                   value: position.inMilliseconds.toDouble().clamp(0, maxDuration.inMilliseconds.toDouble()),
                   onChanged: (value) {
-                    _seek(Duration(milliseconds: value.toInt()));
+                    final duration = Duration(milliseconds: value.round());
+                    _seek(duration);
                   },
                 );
               },
             ),
+            ValueListenableBuilder<Duration>(
+              valueListenable: _positionNotifier,
+              builder: (context, position, child) {
+                return Text(positionToString(position));
+              },
+            ),
+            SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ElevatedButton(
-                  onPressed: _play,
-                  child: Text('Play'),
+                IconButton(
+                  icon: Icon(Icons.skip_previous),
+                  onPressed: _skipToPreviousTrack,
                 ),
-                SizedBox(width: 8),
-                ElevatedButton(
+                IconButton(
+                  icon: Icon(Icons.pause),
                   onPressed: _pause,
-                  child: Text('Pause'),
                 ),
-                SizedBox(width: 8),
-                ElevatedButton(
+                IconButton(
+                  icon: Icon(Icons.play_arrow),
                   onPressed: _resume,
-                  child: Text('Resume'),
+                ),
+                IconButton(
+                  icon: Icon(Icons.skip_next),
+                  onPressed: _skipToNextTrack,
                 ),
               ],
             ),
@@ -114,5 +154,11 @@ class _PlayerPageState extends State<PlayerPage> {
         ),
       ),
     );
+  }
+
+  String positionToString(Duration position) {
+    final minutes = position.inMinutes;
+    final seconds = (position.inSeconds % 60).toString().padLeft(2, '0');
+    return '$minutes:$seconds';
   }
 }
