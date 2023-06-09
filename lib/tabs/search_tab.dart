@@ -98,9 +98,9 @@ class _SearchTabState extends State<SearchTab> {
                 return ListTile(
                   leading: Image.network(track.albumArtwork),
                   title:
-                      Text(track.name, style: TextStyle(color: Colors.white)),
+                      Text(track.name,),
                   subtitle:
-                      Text(track.artist, style: TextStyle(color: Colors.white)),
+                      Text(track.artist,),
                   onTap: () => navigateToPlayerPage(track),
                 );
               },

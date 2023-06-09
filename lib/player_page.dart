@@ -102,7 +102,7 @@ class _PlayerPageState extends State<PlayerPage> {
           gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              stops: [0.1, 0.3],
+              // stops: [0.1, 0.3],
               colors: [Colors.white, Colors.blueGrey])),
       child: Scaffold(
         backgroundColor: Colors.transparent,

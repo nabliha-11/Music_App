@@ -40,27 +40,36 @@ class _TrendingSongState extends State<TrendingSong> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Trending Songs'),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: widget.playlist.length,
-              itemBuilder: (context, index) {
-                final track = widget.playlist[index];
-                return ListTile(
-                  leading: track != null ? Image.network(track.albumArtwork) : null,
-                  title: track != null ? Text(track.name) : null,
-                  subtitle: track != null ? Text(track.artist) : null,
-                  onTap: () => track != null ? navigateToPlayerPageFromTrending(track) : null,
-                );
-              },
+    return Container(
+      decoration: const BoxDecoration(
+          gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              // stops: [0.1, 0.3],
+              colors: [Colors.white, Colors.blueGrey])),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text('Trending Songs'),
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: widget.playlist.length,
+                itemBuilder: (context, index) {
+                  final track = widget.playlist[index];
+                  return ListTile(
+                    leading: track != null ? Image.network(track.albumArtwork) : null,
+                    title: track != null ? Text(track.name) : null,
+                    subtitle: track != null ? Text(track.artist) : null,
+                    onTap: () => track != null ? navigateToPlayerPageFromTrending(track) : null,
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
