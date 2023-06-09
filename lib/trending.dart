@@ -29,11 +29,9 @@ class _TrendingSongState extends State<TrendingSong> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => Material( // Wrap TrendingSong with Material widget
-          child: PlayerPage(
-            playlist: playlist,
-            initialTrackIndex: initialTrackIndex,
-          ),
+        builder: (context) => PlayerPage(
+          playlist: playlist,
+          initialTrackIndex: initialTrackIndex,
         ),
       ),
     );
@@ -41,8 +39,11 @@ class _TrendingSongState extends State<TrendingSong> {
 
   @override
   Widget build(BuildContext context) {
-    return Material( // Wrap TrendingSong with Material widget
-      child: Column(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Trending Songs'),
+      ),
+      body: Column(
         children: [
           Expanded(
             child: ListView.builder(

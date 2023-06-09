@@ -25,9 +25,10 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Music App'),
+        title: const Text('Music App'),
       ),
       body: _tabs[_currentIndex],
+      // backgroundColor: Colors.black,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
@@ -35,18 +36,19 @@ class _HomePageState extends State<HomePage> {
             _currentIndex = index;
           });
         },
-        items: [
+        selectedLabelStyle: const TextStyle(color: Colors.white),
+        selectedItemColor: Colors.white,
+        backgroundColor: Colors.blueGrey[200],
+        items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
+              icon: Icon(Icons.home, color: Colors.white), label: 'Home'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search),
+            icon: Icon(Icons.search, color: Colors.white),
             label: 'Search',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.library_music),
-            label: 'Library',
+            icon: Icon(Icons.library_books, color: Colors.white),
+            label: 'Your Library',
           ),
         ],
       ),

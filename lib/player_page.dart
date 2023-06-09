@@ -6,7 +6,6 @@ import 'package:music_try/models/playlist.dart';
 
 class PlayerPage extends StatefulWidget {
   final List<Track> playlist;
-  //final Playlist playlist;
   final int initialTrackIndex;
 
   const PlayerPage({
@@ -23,6 +22,7 @@ class _PlayerPageState extends State<PlayerPage> {
   final ValueNotifier<Duration> _positionNotifier = ValueNotifier(Duration.zero);
   final ValueNotifier<Duration> _durationNotifier = ValueNotifier(Duration.zero);
   late int _currentTrackIndex;
+  bool _isPlaying = false;
 
   @override
   void initState() {
@@ -50,16 +50,15 @@ class _PlayerPageState extends State<PlayerPage> {
     });
   }
 
-  void _play() async {
-    await audioPlayer.play();
-  }
-
-  void _pause() {
-    audioPlayer.pause();
-  }
-
-  void _resume() {
-    audioPlayer.play();
+  void _playPause() {
+    if (_isPlaying) {
+      audioPlayer.pause();
+    } else {
+      audioPlayer.play();
+    }
+    setState(() {
+      _isPlaying = !_isPlaying;
+    });
   }
 
   void _seek(Duration position) {
@@ -88,69 +87,75 @@ class _PlayerPageState extends State<PlayerPage> {
   Widget build(BuildContext context) {
     final track = widget.playlist[_currentTrackIndex];
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Player'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.network(track.albumArtwork),
-            SizedBox(height: 20),
-            Text(
-              track.name,
-              style: TextStyle(fontSize: 20),
-            ),
-            Text(
-              track.artist,
-              style: TextStyle(fontSize: 16),
-            ),
-            SizedBox(height: 20),
-            ValueListenableBuilder<Duration>(
-              valueListenable: _positionNotifier,
-              builder: (context, position, child) {
-                final maxDuration = _durationNotifier.value;
-                return Slider(
-                  min: 0,
-                  max: maxDuration.inMilliseconds.toDouble(),
-                  value: position.inMilliseconds.toDouble().clamp(0, maxDuration.inMilliseconds.toDouble()),
-                  onChanged: (value) {
-                    final duration = Duration(milliseconds: value.round());
-                    _seek(duration);
-                  },
-                );
-              },
-            ),
-            ValueListenableBuilder<Duration>(
-              valueListenable: _positionNotifier,
-              builder: (context, position, child) {
-                return Text(positionToString(position));
-              },
-            ),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.skip_previous),
-                  onPressed: _skipToPreviousTrack,
-                ),
-                IconButton(
-                  icon: Icon(Icons.pause),
-                  onPressed: _pause,
-                ),
-                IconButton(
-                  icon: Icon(Icons.play_arrow),
-                  onPressed: _resume,
-                ),
-                IconButton(
-                  icon: Icon(Icons.skip_next),
-                  onPressed: _skipToNextTrack,
-                ),
-              ],
-            ),
-          ],
+    return Container(
+      decoration: const BoxDecoration(
+          gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              stops: [0.1, 0.3],
+              colors: [Colors.white, Colors.blueGrey])),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text('Player'),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.network(track.albumArtwork),
+              SizedBox(height: 20),
+              Text(
+                track.name,
+                style: TextStyle(fontSize: 20),
+              ),
+              Text(
+                track.artist,
+                style: TextStyle(fontSize: 16),
+              ),
+              SizedBox(height: 20),
+              ValueListenableBuilder<Duration>(
+                valueListenable: _positionNotifier,
+                builder: (context, position, child) {
+                  final maxDuration = _durationNotifier.value;
+                  return Slider(
+                    min: 0,
+                    max: maxDuration.inMilliseconds.toDouble(),
+                    value: position.inMilliseconds.toDouble().clamp(0, maxDuration.inMilliseconds.toDouble()),
+                    onChanged: (value) {
+                      final duration = Duration(milliseconds: value.round());
+                      _seek(duration);
+                    },
+                    activeColor: Colors.black54,
+                  );
+                },
+              ),
+              ValueListenableBuilder<Duration>(
+                valueListenable: _positionNotifier,
+                builder: (context, position, child) {
+                  return Text(positionToString(position));
+                },
+              ),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.skip_previous),
+                    onPressed: _skipToPreviousTrack,
+                  ),
+                  IconButton(
+                    icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
+                    onPressed: _playPause,
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.skip_next),
+                    onPressed: _skipToNextTrack,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
