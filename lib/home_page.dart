@@ -39,15 +39,15 @@ class _HomePageState extends State<HomePage> {
         selectedLabelStyle: const TextStyle(color: Colors.white),
         selectedItemColor: Colors.white,
         backgroundColor: Colors.blueGrey[200],
-        items: const [
+        items:  [
           BottomNavigationBarItem(
-              icon: Icon(Icons.home, color: Colors.white), label: 'Home'),
+              icon: Icon(Icons.home, color: Colors.blueGrey[700]), label: 'Home'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search, color: Colors.white),
+            icon: Icon(Icons.search, color: Colors.blueGrey[700]),
             label: 'Search',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.library_books, color: Colors.white),
+            icon: Icon(Icons.library_books, color: Colors.blueGrey[700]),
             label: 'Your Library',
           ),
         ],

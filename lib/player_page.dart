@@ -6,6 +6,7 @@ import 'package:music_try/models/playlist.dart';
 
 class PlayerPage extends StatefulWidget {
   final List<Track> playlist;
+  //final Playlist playlist;
   final int initialTrackIndex;
 
   const PlayerPage({
@@ -28,6 +29,7 @@ class _PlayerPageState extends State<PlayerPage> {
   void initState() {
     super.initState();
     audioPlayer = AudioPlayer();
+    _currentTrackIndex = widget.initialTrackIndex;
     _initAudioPlayer();
   }
 
@@ -38,7 +40,6 @@ class _PlayerPageState extends State<PlayerPage> {
   }
 
   void _initAudioPlayer() async {
-    _currentTrackIndex = widget.initialTrackIndex;
     final track = widget.playlist[_currentTrackIndex];
 
     await audioPlayer.setUrl(track.audioUrl);
@@ -47,6 +48,11 @@ class _PlayerPageState extends State<PlayerPage> {
     });
     audioPlayer.positionStream.listen((position) {
       _positionNotifier.value = position ?? Duration.zero;
+    });
+    audioPlayer.playerStateStream.listen((playerState) {
+      if (playerState.processingState == ProcessingState.completed) {
+        _skipToNextTrack();
+      }
     });
   }
 
@@ -71,6 +77,8 @@ class _PlayerPageState extends State<PlayerPage> {
       final track = widget.playlist[_currentTrackIndex];
       audioPlayer.setUrl(track.audioUrl);
       audioPlayer.play();
+
+      setState(() {});
     }
   }
 
@@ -80,6 +88,8 @@ class _PlayerPageState extends State<PlayerPage> {
       final track = widget.playlist[_currentTrackIndex];
       audioPlayer.setUrl(track.audioUrl);
       audioPlayer.play();
+
+      setState(() {});
     }
   }
 

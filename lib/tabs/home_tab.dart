@@ -41,11 +41,12 @@ class _HomeTabState extends State<HomeTab> {
       }
 
       final String accessToken = await ApiService.getAccessToken();
-      print('hi');
+      // print('hi');
       print(accessToken);
       print(playlist.id);
-      print('why');
-      final List<Track> tracks = await DatabaseHelper().getTracksByPlaylistId(playlist.id, accessToken);
+      // print('why');
+      final List<Track> tracks = await DatabaseHelper()
+          .getTracksByPlaylistId(playlist.id, accessToken);
       print(tracks.length);
       if (tracks == null || tracks.isEmpty) {
         print('No tracks available');
@@ -57,7 +58,7 @@ class _HomeTabState extends State<HomeTab> {
         context,
         MaterialPageRoute(
           builder: (context) => TrendingSong(
-            playlist: tracks?? [], // Use empty list if tracks is null
+            playlist: tracks ?? [], // Use empty list if tracks is null
             initialTrackIndex: initialTrackIndex,
           ),
         ),
@@ -66,7 +67,6 @@ class _HomeTabState extends State<HomeTab> {
       print('Failed to open playlist: $error');
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -77,12 +77,11 @@ class _HomeTabState extends State<HomeTab> {
       //         begin: Alignment.topLeft,
       //         end: Alignment.bottomRight,
       //         stops: const [0.1, 0.3])),
-      decoration: const BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              // stops: [0.1, 0.3],
-              colors: [Colors.white,Colors.blueGrey])),
+      decoration: const BoxDecoration(gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          // stops: [0.1, 0.3],
+          colors: [Colors.white, Colors.blueGrey])),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         // appBar: AppBar(
@@ -99,36 +98,36 @@ class _HomeTabState extends State<HomeTab> {
           itemBuilder: (context, index) {
             final playlist = featuredPlaylists[index];
             return GestureDetector(
-              onTap: () {
-                _openPlaylist(playlist);
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  image: DecorationImage(
-                    image: NetworkImage(playlist.coverImageUrl),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Container(
-                      color: Colors.black.withOpacity(0.6),
-                      padding: EdgeInsets.all(8),
-                      child: Text(
-                        playlist.name,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                onTap: () {
+                  _openPlaylist(playlist);
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    image: DecorationImage(
+                      image: NetworkImage(playlist.coverImageUrl),
+                      fit: BoxFit.cover,
                     ),
-                  ],
-                ),
-              ),
-            );
+                    // ),
+                    // child: Column(
+                    //   mainAxisAlignment: MainAxisAlignment.end,
+                    //   children: [
+                    //     Container(
+                    //       color: Colors.black.withOpacity(0.6),
+                    //       padding: EdgeInsets.all(8),
+                    //       child: Text(
+                    //         playlist.name,
+                    //         style: TextStyle(
+                    //           color: Colors.white,
+                    //           fontSize: 16,
+                    //           fontWeight: FontWeight.bold,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
+                  ),
+                ));
           },
         ),
       ),

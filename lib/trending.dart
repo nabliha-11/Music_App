@@ -24,14 +24,15 @@ class _TrendingSongState extends State<TrendingSong> {
   }
 
   void navigateToPlayerPageFromTrending(Track track) {
-    final playlist = [track];
-    final initialTrackIndex = 0;
+    final initialTrackIndex = widget.playlist.indexOf(track);
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => PlayerPage(
-          playlist: playlist,
-          initialTrackIndex: initialTrackIndex,
+        builder: (context) => Material(
+          child: PlayerPage(
+            playlist: widget.playlist,
+            initialTrackIndex: initialTrackIndex,
+          ),
         ),
       ),
     );
