@@ -108,24 +108,6 @@ class _HomeTabState extends State<HomeTab> {
                       image: NetworkImage(playlist.coverImageUrl),
                       fit: BoxFit.cover,
                     ),
-                    // ),
-                    // child: Column(
-                    //   mainAxisAlignment: MainAxisAlignment.end,
-                    //   children: [
-                    //     Container(
-                    //       color: Colors.black.withOpacity(0.6),
-                    //       padding: EdgeInsets.all(8),
-                    //       child: Text(
-                    //         playlist.name,
-                    //         style: TextStyle(
-                    //           color: Colors.white,
-                    //           fontSize: 16,
-                    //           fontWeight: FontWeight.bold,
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
                   ),
                 ));
           },
