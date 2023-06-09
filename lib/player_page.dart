@@ -6,7 +6,6 @@ import 'package:music_try/models/playlist.dart';
 
 class PlayerPage extends StatefulWidget {
   final List<Track> playlist;
-  //final Playlist playlist;
   final int initialTrackIndex;
 
   const PlayerPage({
@@ -99,11 +98,12 @@ class _PlayerPageState extends State<PlayerPage> {
 
     return Container(
       decoration: const BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              // stops: [0.1, 0.3],
-              colors: [Colors.white, Colors.blueGrey])),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Colors.white, Colors.blueGrey],
+        ),
+      ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
@@ -151,14 +151,26 @@ class _PlayerPageState extends State<PlayerPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
+                    iconSize: 36,
                     icon: Icon(Icons.skip_previous),
                     onPressed: _skipToPreviousTrack,
                   ),
-                  IconButton(
-                    icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
-                    onPressed: _playPause,
+                  SizedBox(width: 16),
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.black54,
+                    ),
+                    child: IconButton(
+                      iconSize: 44,
+                      icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
+                      onPressed: _playPause,
+                      color: Colors.white,
+                    ),
                   ),
+                  SizedBox(width: 16),
                   IconButton(
+                    iconSize: 36,
                     icon: Icon(Icons.skip_next),
                     onPressed: _skipToNextTrack,
                   ),
