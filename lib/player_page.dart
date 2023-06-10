@@ -206,19 +206,13 @@ class _PlayerPageState extends State<PlayerPage> {
   }
   void _updateAudioPlayer() async {
     final track = widget.playlist[_currentTrackIndex];
-    final updatedTrack = await _databaseHelper.fetchTrackById(track.id);
 
-    if (updatedTrack != null) {
-      await audioPlayer.setUrl(updatedTrack.audioUrl);
-    }
+    await audioPlayer.setUrl(track.audioUrl);
+
     setState(() {
-      // Update the track details with the fetched track
-      if (updatedTrack != null) {
-        widget.playlist[_currentTrackIndex] = updatedTrack;
-      }
+      // Update the initialTrackIndex to reflect the current track
     });
   }
-
 
   void _playPause() {
     if (_isPlaying) {
@@ -278,8 +272,8 @@ class _PlayerPageState extends State<PlayerPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.network(
-                track.albumArtwork,
-                errorBuilder: (context, error, stackTrace) {
+              track.albumArtwork,
+              errorBuilder: (context, error, stackTrace) {
                 return Image.network(
                   'https://i.pinimg.com/originals/31/fe/56/31fe56e7053b5e9085373c666bc252e3.jpg', // Replace with your default image URL
                   fit: BoxFit.cover,
