@@ -3,6 +3,7 @@ import 'package:music_try/models/track.dart';
 import 'package:music_try/database_helper.dart';
 import 'package:music_try/models/playlist_data.dart';
 import 'package:music_try/player_page.dart';
+import 'package:music_try/playlist_player_page.dart';
 class PlaylistScreen extends StatefulWidget {
   final PlaylistData playlist;
 
@@ -27,16 +28,17 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
         _tracksFuture = _databaseHelper.getSongsByPlaylistId(widget.playlist.id!);
       });
     });
+    print(widget.playlist.tracks);
   }
 
-  void _playSong(Track track) {
-    // Implement your playback logic here
-    // For example, navigate to the PlayerPage and pass the track
+  void _playSong(List<Track> track) {
+    print('here');
+    print(track);
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => PlayerPage(
-          playlist: widget.playlist.tracks,
+        builder: (context) => PlaylistPlayerPage(
+          playlist: track,
           initialTrackIndex: 0,
         ),
       ),
@@ -57,6 +59,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
       body: FutureBuilder<List<Track>>(
         future: _tracksFuture,
         builder: (context, snapshot) {
+          print(snapshot.data?.length);
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: CircularProgressIndicator(),
@@ -71,7 +74,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                   title: Text(track.name),
                   subtitle: Text(track.artist),
                   onTap: () {
-                    _playSong(track); // Call _playSong method when tapped
+                    _playSong(snapshot.data as List<Track>); // Call _playSong method when tapped
                   },
                 );
               },
