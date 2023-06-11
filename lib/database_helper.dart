@@ -142,7 +142,18 @@ class DatabaseHelper {
       throw Exception('Database not initialized');
     }
   }
-
+  Future<void> deleteTrackFromPlaylist(String trackId, int playlistId) async {
+    final db = _database;
+    if (db != null) {
+      await db.delete(
+        tableTracks,
+        where: '$columnTrackId = ? AND $columnPlaylistId= ?',
+        whereArgs: [trackId, playlistId],
+      );
+    } else {
+      throw Exception('Database not initialized');
+    }
+  }
   Future<List<Track>> getSongsByPlaylistId(int playlistId) async {
     final db = _database;
     if (!_isDatabaseInitialized!) {

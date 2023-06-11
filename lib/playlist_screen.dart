@@ -45,7 +45,17 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
       ),
     );
   }
-
+  void _deleteTrack(Track track) {
+    _databaseHelper.deleteTrackFromPlaylist(track.id!, widget.playlist.id!);
+    setState(() {
+      _tracksFuture = _databaseHelper.getSongsByPlaylistId(widget.playlist.id!);
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Track deleted from playlist'),
+      ),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     if (!_isDatabaseInitialized!) {
@@ -67,7 +77,6 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
           title: Text(widget.playlist.name),
           backgroundColor: Colors.blueGrey[300],
         ),
-
         body: FutureBuilder<List<Track>>(
           future: _tracksFuture,
           builder: (context, snapshot) {
@@ -82,13 +91,29 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
                   final track = snapshot.data![index];
-                  return ListTile(
-                    leading: Image.network(track.albumArtwork),
-                    title: Text(track.name),
-                    subtitle: Text(track.artist),
-                    onTap: () {
-                      _playSong(snapshot.data as List<Track>,index); // Call _playSong method when tapped
+                  return Dismissible(
+                    key: Key(track.id.toString()),
+                    direction: DismissDirection.endToStart,
+                    background: Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerRight,
+                      padding: EdgeInsets.only(right: 16.0),
+                      child: Icon(
+                        Icons.delete,
+                        color: Colors.white,
+                      ),
+                    ),
+                    onDismissed: (direction) {
+                      _deleteTrack(track); // Call _deleteTrack method when dismissed
                     },
+                    child: ListTile(
+                      leading: Image.network(track.albumArtwork),
+                      title: Text(track.name),
+                      subtitle: Text(track.artist),
+                      onTap: () {
+                        _playSong(snapshot.data as List<Track>, index);
+                      },
+                    ),
                   );
                 },
               );
