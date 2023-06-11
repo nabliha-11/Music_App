@@ -4,7 +4,6 @@ import 'package:music_try/player_page.dart';
 import 'package:music_try/services/spotify_api_service.dart';
 import 'package:music_try/models/track.dart';
 import 'package:music_try/database_helper.dart';
-import 'package:music_try/tabs/slider_widget.dart';
 import 'package:music_try/trending.dart';
 
 import '../new_released.dart';
