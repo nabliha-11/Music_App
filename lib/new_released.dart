@@ -50,7 +50,7 @@ class _NewReleasedSongState extends State<NewReleasedSong> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: Text('New Released Songs'),
+          title: Text('Top Hits'),
         ),
         body: Column(
           children: [

@@ -50,7 +50,7 @@ class _TrendingSongState extends State<TrendingSong> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: Text('Trending Songs'),
+          title: Text('Featured Songs'),
         ),
         body: Column(
           children: [

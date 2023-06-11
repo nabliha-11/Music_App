@@ -60,10 +60,11 @@ class _HomeTabState extends State<HomeTab> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => TrendingSong(
-            playlist: tracks ?? [], // Use empty list if tracks is null
-            initialTrackIndex: initialTrackIndex,
-          ),
+          builder: (context) =>
+              TrendingSong(
+                playlist: tracks ?? [], // Use empty list if tracks is null
+                initialTrackIndex: initialTrackIndex,
+              ),
         ),
       );
     } catch (error) {
@@ -107,10 +108,11 @@ class _HomeTabState extends State<HomeTab> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => NewReleasedSong(
-            playlist: tracks ?? [], // Use empty list if tracks is null
-            initialTrackIndex: initialTrackIndex,
-          ),
+          builder: (context) =>
+              NewReleasedSong(
+                playlist: tracks ?? [], // Use empty list if tracks is null
+                initialTrackIndex: initialTrackIndex,
+              ),
         ),
       );
     } catch (error) {
@@ -121,74 +123,54 @@ class _HomeTabState extends State<HomeTab> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // decoration: BoxDecoration(
-      //     gradient: LinearGradient(
-      //         colors: [Colors.blueGrey.shade300, Colors.black],
-      //         begin: Alignment.topLeft,
-      //         end: Alignment.bottomRight,
-      //         stops: const [0.1, 0.3])),
-      decoration: const BoxDecoration(gradient: LinearGradient(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          // stops: [0.1, 0.3],
-          colors: [Colors.white, Colors.blueGrey])),
+          colors: [Colors.white, Colors.blueGrey],
+        ),
+      ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: SingleChildScrollView(
-          child: Container(
-            constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height,
-            ),
-            child: Column(
-              children: [
-                SizedBox(height: 10),
-                Container(
-                  height: 200,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: newReleasedPlaylists.length,
-                    itemBuilder: (context, index) {
-                      final playlist1 = newReleasedPlaylists[index];
-                      return GestureDetector(
-                        onTap: () {
-                          _openNewReleasedPlaylist(playlist1);
-                        },
-                        child: Container(
-                          width: 150,
-                          margin: EdgeInsets.symmetric(horizontal: 8),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            image: DecorationImage(
-                              image: NetworkImage(playlist1.coverImageUrl),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
+          padding: EdgeInsets.all(16),
+          // Add padding to the SingleChildScrollView
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            // Align items at the start
+            children: [
+              SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                // Add left padding to the heading
+                child: Text(
+                  'Top Hits',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blueGrey[700],
                   ),
                 ),
-                GridView.builder(
-                  padding: EdgeInsets.all(16),
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                  ),
-                  itemCount: featuredPlaylists.length,
+              ),
+              Container(
+                height: 200,
+                child: ListView.builder(
+                  padding: EdgeInsets.only(top: 16),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: newReleasedPlaylists.length,
                   itemBuilder: (context, index) {
-                    final playlist = featuredPlaylists[index];
+                    final playlist1 = newReleasedPlaylists[index];
                     return GestureDetector(
                       onTap: () {
-                        _openPlaylist(playlist);
+                        _openNewReleasedPlaylist(playlist1);
                       },
                       child: Container(
+                        width: 150,
+                        margin: EdgeInsets.symmetric(horizontal: 8),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
                           image: DecorationImage(
-                            image: NetworkImage(playlist.coverImageUrl),
+                            image: NetworkImage(playlist1.coverImageUrl),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -196,8 +178,50 @@ class _HomeTabState extends State<HomeTab> {
                     );
                   },
                 ),
-              ],
-            ),
+              ),
+              SizedBox(height: 30),
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                // Add left padding to the heading
+                child: Text(
+                  'Featured Playlists',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blueGrey[700],
+                  ),
+                ),
+              ),
+              GridView.builder(
+                padding: EdgeInsets.only(top: 16),
+                // Add top padding to the GridView
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                ),
+                itemCount: featuredPlaylists.length,
+                itemBuilder: (context, index) {
+                  final playlist = featuredPlaylists[index];
+                  return GestureDetector(
+                    onTap: () {
+                      _openPlaylist(playlist);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        image: DecorationImage(
+                          image: NetworkImage(playlist.coverImageUrl),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
         ),
       ),

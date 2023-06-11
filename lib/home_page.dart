@@ -25,7 +25,10 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Music App'),
+        title: const Padding(
+          padding: EdgeInsets.only(left: 10.0), // Add left padding to the app bar title
+          child: Text('Musicana'),
+        ),
       ),
       body: _tabs[_currentIndex],
       // backgroundColor: Colors.black,

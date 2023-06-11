@@ -53,44 +53,55 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
         child: CircularProgressIndicator(),
       );
     }
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.playlist.name),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Colors.white, Colors.blueGrey],
+        ),
       ),
-      body: FutureBuilder<List<Track>>(
-        future: _tracksFuture,
-        builder: (context, snapshot) {
-          print(snapshot.data?.length);
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text(widget.playlist.name),
+        ),
+
+        body: FutureBuilder<List<Track>>(
+          future: _tracksFuture,
+          builder: (context, snapshot) {
+            print(snapshot.data?.length);
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            if (snapshot.hasData) {
+              return ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  final track = snapshot.data![index];
+                  return ListTile(
+                    leading: Image.network(track.albumArtwork),
+                    title: Text(track.name),
+                    subtitle: Text(track.artist),
+                    onTap: () {
+                      _playSong(snapshot.data as List<Track>,index); // Call _playSong method when tapped
+                    },
+                  );
+                },
+              );
+            }
+            if (snapshot.hasError) {
+              return Center(
+                child: Text('Error: ${snapshot.error}'),
+              );
+            }
             return Center(
-              child: CircularProgressIndicator(),
+              child: Text('No tracks found.'),
             );
-          }
-          if (snapshot.hasData) {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                final track = snapshot.data![index];
-                return ListTile(
-                  leading: Image.network(track.albumArtwork),
-                  title: Text(track.name),
-                  subtitle: Text(track.artist),
-                  onTap: () {
-                    _playSong(snapshot.data as List<Track>,index); // Call _playSong method when tapped
-                  },
-                );
-              },
-            );
-          }
-          if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
-          }
-          return Center(
-            child: Text('No tracks found.'),
-          );
-        },
+          },
+        ),
       ),
     );
   }

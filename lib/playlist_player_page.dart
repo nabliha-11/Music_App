@@ -41,6 +41,7 @@ class _PlaylistPlayerPageState extends State<PlaylistPlayerPage> {
       _currentTrackIndex = 0;
     }
     _initAudioPlayer();
+    _playPause();
   }
 
 
@@ -115,86 +116,99 @@ class _PlaylistPlayerPageState extends State<PlaylistPlayerPage> {
   Widget build(BuildContext context) {
     final track = widget.playlist[_currentTrackIndex];
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Player'),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Colors.white, Colors.blueGrey],
+        ),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.network(
-              track.albumArtwork,
-              errorBuilder: (context, error, stackTrace) {
-                return Image.network(
-                  'https://i.pinimg.com/originals/31/fe/56/31fe56e7053b5e9085373c666bc252e3.jpg', // Replace with your default image URL
-                  fit: BoxFit.cover,
-                );
-              },
-            ),
-            SizedBox(height: 20),
-            Text(
-              track.name,
-              style: TextStyle(fontSize: 20),
-            ),
-            Text(
-              track.artist,
-              style: TextStyle(fontSize: 16),
-            ),
-            SizedBox(height: 20),
-            ValueListenableBuilder<Duration>(
-              valueListenable: _positionNotifier,
-              builder: (context, position, child) {
-                final maxDuration = _durationNotifier.value;
-                return Slider(
-                  min: 0,
-                  max: maxDuration.inMilliseconds.toDouble(),
-                  value: position.inMilliseconds.toDouble().clamp(0, maxDuration.inMilliseconds.toDouble()),
-                  onChanged: (value) {
-                    final duration = Duration(milliseconds: value.round());
-                    _seek(duration);
-                  },
-                  activeColor: Colors.black54,
-                );
-              },
-            ),
-            ValueListenableBuilder<Duration>(
-              valueListenable: _positionNotifier,
-              builder: (context, position, child) {
-                return Text(positionToString(position));
-              },
-            ),
-            SizedBox(height: 20),
-            Row(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text('Musicana'),
+        ),
+        body: Center(
+          child: Padding(
+            padding:  EdgeInsets.only(bottom: kToolbarHeight),
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                IconButton(
-                  iconSize: 36,
-                  icon: Icon(Icons.skip_previous),
-                  onPressed: _skipToPreviousTrack,
+                Image.network(
+                  track.albumArtwork,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.network(
+                      'https://i.pinimg.com/originals/31/fe/56/31fe56e7053b5e9085373c666bc252e3.jpg', // Replace with your default image URL
+                      fit: BoxFit.cover,
+                    );
+                  },
                 ),
-                SizedBox(width: 16),
-                Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.black54,
-                  ),
-                  child: IconButton(
-                    iconSize: 44,
-                    icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
-                    onPressed: _playPause,
-                    color: Colors.white,
-                  ),
+                SizedBox(height: 20),
+                Text(
+                  track.name,
+                  style: TextStyle(fontSize: 20),
                 ),
-                SizedBox(width: 16),
-                IconButton(
-                  iconSize: 36,
-                  icon: Icon(Icons.skip_next),
-                  onPressed: _skipToNextTrack,
+                Text(
+                  track.artist,
+                  style: TextStyle(fontSize: 16),
+                ),
+                SizedBox(height: 20),
+                ValueListenableBuilder<Duration>(
+                  valueListenable: _positionNotifier,
+                  builder: (context, position, child) {
+                    final maxDuration = _durationNotifier.value;
+                    return Slider(
+                      min: 0,
+                      max: maxDuration.inMilliseconds.toDouble(),
+                      value: position.inMilliseconds.toDouble().clamp(0, maxDuration.inMilliseconds.toDouble()),
+                      onChanged: (value) {
+                        final duration = Duration(milliseconds: value.round());
+                        _seek(duration);
+                      },
+                      activeColor: Colors.black54,
+                    );
+                  },
+                ),
+                ValueListenableBuilder<Duration>(
+                  valueListenable: _positionNotifier,
+                  builder: (context, position, child) {
+                    return Text(positionToString(position));
+                  },
+                ),
+                SizedBox(height: 30),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      iconSize: 36,
+                      icon: Icon(Icons.skip_previous),
+                      onPressed: _skipToPreviousTrack,
+                    ),
+                    SizedBox(width: 16),
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.black54,
+                      ),
+                      child: IconButton(
+                        iconSize: 44,
+                        icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
+                        onPressed: _playPause,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    IconButton(
+                      iconSize: 36,
+                      icon: Icon(Icons.skip_next),
+                      onPressed: _skipToNextTrack,
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );

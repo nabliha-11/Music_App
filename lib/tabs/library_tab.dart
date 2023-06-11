@@ -48,18 +48,28 @@ class _LibraryTabState extends State<LibraryTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ListView.builder(
-        itemCount: _playlists.length,
-        itemBuilder: (context, index) {
-          final playlist = _playlists[index];
-          return ListTile(
-            leading: Image.network(playlist.coverImageUrl),
-            title: Text(playlist.name),
-            subtitle: Text(playlist.description),
-            onTap: () => navigateToPlayScreen(playlist),
-          );
-        },
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Colors.white, Colors.blueGrey],
+        ),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: ListView.builder(
+          itemCount: _playlists.length,
+          itemBuilder: (context, index) {
+            final playlist = _playlists[index];
+            return ListTile(
+              leading: Image.network(playlist.coverImageUrl),
+              title: Text(playlist.name),
+              subtitle: Text(playlist.description),
+              onTap: () => navigateToPlayScreen(playlist),
+            );
+          },
+        ),
       ),
     );
   }
