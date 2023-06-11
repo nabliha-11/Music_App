@@ -9,9 +9,11 @@ class MusicApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Musicana',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         // primarySwatch: Colors.blueGrey,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+
       ),
       initialRoute: '/',
       routes: {

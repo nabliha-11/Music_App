@@ -3,6 +3,7 @@ import 'package:music_try/database_helper.dart';
 import 'package:music_try/models/playlist_data.dart';
 import 'package:music_try/player_page.dart';
 import 'package:music_try/playlist_screen.dart';
+
 class LibraryTab extends StatefulWidget {
   @override
   _LibraryTabState createState() => _LibraryTabState();
@@ -26,14 +27,15 @@ class _LibraryTabState extends State<LibraryTab> {
     });
   }
 
-  void navigateToPlayScreen(PlaylistData playlist)
-  {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context)=> PlaylistScreen(
-            playlist: playlist)
-        ),
+  void navigateToPlayScreen(PlaylistData playlist) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PlaylistScreen(playlist: playlist),
+      ),
     );
   }
+
   void navigateToPlayerPage(PlaylistData playlist) {
     Navigator.push(
       context,
@@ -42,6 +44,57 @@ class _LibraryTabState extends State<LibraryTab> {
           playlist: playlist.tracks,
           initialTrackIndex: 0,
         ),
+      ),
+    );
+  }
+
+  Future<void> _deletePlaylist(int playlistId) async {
+    await _databaseHelper.deletePlaylist(playlistId);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Playlist deleted')),
+    );
+    await _initializeData();
+  }
+
+  Widget _buildPlaylistItem(PlaylistData playlist) {
+    return ListTile(
+      leading: Image.network(playlist.coverImageUrl),
+      title: Text(playlist.name),
+      subtitle: Text(playlist.description),
+      onTap: () => navigateToPlayScreen(playlist),
+      trailing: IconButton(
+        icon: Icon(Icons.delete),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('Delete Playlist'),
+                content: Text('Are you sure you want to delete this playlist?'),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context); // Close the dialog
+                    },
+                    child: Text('Cancel'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      await _deletePlaylist(playlist.id);
+                      Navigator.pop(context); // Close the dialog
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                        Colors.red,
+                      ),
+                    ),
+                    child: Text('Delete'),
+                  ),
+                ],
+              );
+            },
+          );
+        },
       ),
     );
   }
@@ -62,12 +115,7 @@ class _LibraryTabState extends State<LibraryTab> {
           itemCount: _playlists.length,
           itemBuilder: (context, index) {
             final playlist = _playlists[index];
-            return ListTile(
-              leading: Image.network(playlist.coverImageUrl),
-              title: Text(playlist.name),
-              subtitle: Text(playlist.description),
-              onTap: () => navigateToPlayScreen(playlist),
-            );
+            return _buildPlaylistItem(playlist);
           },
         ),
       ),

@@ -96,6 +96,15 @@ class DatabaseHelper {
       throw Exception('Database not initialized');
     }
   }
+  Future<void> deletePlaylist(int playlistId) async {
+    final db = _database;
+    if (db != null) {
+      await db.delete(tablePlaylists, where: '$columnId = ?', whereArgs: [playlistId]);
+      await db.delete(tableTracks, where: '$columnPlaylistId = ?', whereArgs: [playlistId]);
+    } else {
+      throw Exception('Database not initialized');
+    }
+  }
 
   Future<void> updatePlaylist(PlaylistData playlist, Track track) async {
     print('updating');

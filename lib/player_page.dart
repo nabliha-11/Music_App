@@ -156,7 +156,7 @@ class _PlayerPageState extends State<PlayerPage> {
                   description: '',
                   coverImageUrl: newPlaylistCoverImageUrl.isNotEmpty
                       ? newPlaylistCoverImageUrl
-                      : 'https://travel.home.sndimg.com/content/dam/images/travel/stock/2017/3/24/0/Shutterstock_393700531_BeachPlaylistGraphic.jpg.rend.hgtvcom.616.462.suffix/1491594774042.jpeg', // Assign a default cover image URL here
+                      : 'https://i.pinimg.com/originals/00/60/1a/00601a21fcc9a2611191b136dc1a80bf.jpg', // Assign a default cover image URL here
                   tracks: [],
                 );
                 final id = await _databaseHelper.insertPlaylist(playlist);
