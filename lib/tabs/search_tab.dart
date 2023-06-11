@@ -9,14 +9,31 @@ class SearchTab extends StatefulWidget {
   _SearchTabState createState() => _SearchTabState();
 }
 
-class _SearchTabState extends State<SearchTab> {
+class _SearchTabState extends State<SearchTab>
+    with SingleTickerProviderStateMixin {
   List<Track> tracks = [];
   List<Track> filteredTracks = [];
   TextEditingController _searchController = TextEditingController();
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+  int _selectedTrackIndex = -1;
 
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 600),
+    );
+    _scaleAnimation =
+        Tween<double>(begin: 1.0, end: 0.95).animate(_animationController);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _animationController.dispose();
+    super.dispose();
   }
 
   Future<void> fetchTracks(String query) async {
@@ -38,38 +55,76 @@ class _SearchTabState extends State<SearchTab> {
   }
 
   void navigateToPlayerPage(Track track) {
-    print(track.audioUrl);
     final playlist = [track];
     final initialTrackIndex = 0;
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PlayerPage(
-          playlist: playlist,
-          initialTrackIndex: initialTrackIndex,
-        ),
-      ),
-    );
+    // _animationController.reset();
+    _animationController.forward().whenComplete(() {
+      Navigator.push(
+          context,
+          PageRouteBuilder(
+              transitionDuration: Duration(milliseconds: 800),
+              pageBuilder: (context, animation, secondaryAnimation) {
+                return SlideTransition(
+                  position: animation.drive(
+                    Tween(begin: Offset(1.0, 0.0), end: Offset.zero).chain(
+                      CurveTween(curve: Curves.ease),
+                    ),
+                  ),
+                  child: PlayerPage(
+                    playlist: playlist,
+                    initialTrackIndex: initialTrackIndex,
+                  ),
+                );
+              })
+          // MaterialPageRoute(
+          //   builder: (context) => PlayerPage(
+          //     playlist: playlist,
+          //     initialTrackIndex: initialTrackIndex,
+          //   ),
+          // ),
+          );
+      _animationController.reset();
+    });
   }
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
+  Widget _buildListTile(int index, Track track) {
+    final isSelected = index == _selectedTrackIndex;
+    return AnimatedBuilder(
+      animation: _animationController,
+      builder: (context, child) {
+        final scale = isSelected ? _scaleAnimation.value : 1.0;
+        return Transform.scale(
+          scale: scale,
+          child: child,
+        );
+      },
+      child: ListTile(
+        leading: Image.network(track.albumArtwork),
+        title: Text(track.name),
+        subtitle: Text(track.artist),
+        onTap: () {
+          setState(() {
+            _selectedTrackIndex = index;
+          });
+          navigateToPlayerPage(track);
+        },
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              // stops: [0.1, 0.3],
-              colors: [Colors.white, Colors.blueGrey])),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Colors.white, Colors.blueGrey],
+        ),
+      ),
       child: Column(
         children: [
-          const SizedBox(height: 16,),
+          const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
@@ -86,8 +141,10 @@ class _SearchTabState extends State<SearchTab> {
                   borderSide: BorderSide(color: Colors.black45),
                 ),
               ),
-              style:
-                  const TextStyle(color: Colors.black45, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                color: Colors.black45,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           Expanded(
@@ -95,14 +152,7 @@ class _SearchTabState extends State<SearchTab> {
               itemCount: filteredTracks.length,
               itemBuilder: (context, index) {
                 final track = filteredTracks[index];
-                return ListTile(
-                  leading: Image.network(track.albumArtwork),
-                  title:
-                      Text(track.name,),
-                  subtitle:
-                      Text(track.artist,),
-                  onTap: () => navigateToPlayerPage(track),
-                );
+                return _buildListTile(index, track);
               },
             ),
           ),

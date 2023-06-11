@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Padding(
           padding: EdgeInsets.only(left: 10.0), // Add left padding to the app bar title
-          child: Text('Musicana'),
+          child: Text('Musicana',),
         ),
         backgroundColor: Colors.blueGrey[300],
       ),

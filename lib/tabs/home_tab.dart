@@ -5,6 +5,7 @@ import 'package:music_try/services/spotify_api_service.dart';
 import 'package:music_try/models/track.dart';
 import 'package:music_try/database_helper.dart';
 import 'package:music_try/trending.dart';
+import 'package:animations/animations.dart';
 
 import '../new_released.dart';
 import '../services/api_service.dart';
@@ -57,17 +58,33 @@ class _HomeTabState extends State<HomeTab> {
       }
       final int initialTrackIndex = 0;
 
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) =>
+      //         TrendingSong(
+      //           playlist: tracks ?? [], // Use empty list if tracks is null
+      //           initialTrackIndex: initialTrackIndex,
+      //         ),
+      //   ),
+      // );
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) =>
-              TrendingSong(
-                playlist: tracks ?? [], // Use empty list if tracks is null
+        PageRouteBuilder(
+          transitionDuration: Duration(milliseconds: 800),
+          pageBuilder: (context, animation, secondaryAnimation) {
+            return FadeThroughTransition(
+              animation: animation,
+              secondaryAnimation: secondaryAnimation,
+              child: TrendingSong(
+                playlist: tracks ?? [],
                 initialTrackIndex: initialTrackIndex,
               ),
+            );
+          },
         ),
       );
-    } catch (error) {
+  } catch (error) {
       print('Failed to open playlist: $error');
     }
   }
@@ -105,16 +122,34 @@ class _HomeTabState extends State<HomeTab> {
       }
       final int initialTrackIndex = 0;
 
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) =>
+      //         NewReleasedSong(
+      //           playlist: tracks ?? [], // Use empty list if tracks is null
+      //           initialTrackIndex: initialTrackIndex,
+      //         ),
+      //   ),
+      // );
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) =>
-              NewReleasedSong(
-                playlist: tracks ?? [], // Use empty list if tracks is null
+        PageRouteBuilder(
+          transitionDuration: Duration(milliseconds: 800),
+          pageBuilder: (context, animation, secondaryAnimation) {
+            return SharedAxisTransition(
+              animation: animation,
+              secondaryAnimation: secondaryAnimation,
+              transitionType: SharedAxisTransitionType.horizontal,
+              child: NewReleasedSong(
+                playlist: tracks ?? [],
                 initialTrackIndex: initialTrackIndex,
               ),
+            );
+          },
         ),
       );
+
     } catch (error) {
       print('Failed to open playlist: $error');
     }
