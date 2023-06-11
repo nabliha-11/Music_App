@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:music_try/database_helper.dart';
 import 'package:music_try/models/playlist_data.dart';
 import 'package:music_try/player_page.dart';
-
+import 'package:music_try/playlist_screen.dart';
 class LibraryTab extends StatefulWidget {
   @override
   _LibraryTabState createState() => _LibraryTabState();
@@ -26,6 +26,14 @@ class _LibraryTabState extends State<LibraryTab> {
     });
   }
 
+  void navigateToPlayScreen(PlaylistData playlist)
+  {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context)=> PlaylistScreen(
+            playlist: playlist)
+        ),
+    );
+  }
   void navigateToPlayerPage(PlaylistData playlist) {
     Navigator.push(
       context,
@@ -49,7 +57,7 @@ class _LibraryTabState extends State<LibraryTab> {
             leading: Image.network(playlist.coverImageUrl),
             title: Text(playlist.name),
             subtitle: Text(playlist.description),
-            onTap: () => navigateToPlayerPage(playlist),
+            onTap: () => navigateToPlayScreen(playlist),
           );
         },
       ),

@@ -59,7 +59,7 @@ class _PlayerPageState extends State<PlayerPage> {
       final updatedPlaylist = selectedPlaylist!.copyWith(
         tracks: List.from(selectedPlaylist!.tracks)..add(track),
       );
-      await _databaseHelper.updatePlaylist(updatedPlaylist);
+      await _databaseHelper.updatePlaylist(updatedPlaylist,track);
       setState(() {
         selectedPlaylist = updatedPlaylist;
       });
@@ -250,17 +250,17 @@ class _PlayerPageState extends State<PlayerPage> {
   @override
   @override
   Widget build(BuildContext context) {
-    if (widget.playlist.isEmpty) {
-      // Handle the case when the playlist is empty
-      return Scaffold(
-        appBar: AppBar(
-          title: Text('Player'),
-        ),
-        body: Center(
-          child: Text('Playlist is empty.'),
-        ),
-      );
-    }
+    // if (widget.playlist.isEmpty) {
+    //   // Handle the case when the playlist is empty
+    //   return Scaffold(
+    //     appBar: AppBar(
+    //       title: Text('Player'),
+    //     ),
+    //     body: Center(
+    //       child: Text('Playlist is empty.'),
+    //     ),
+    //   );
+    // }
     final track = widget.playlist[_currentTrackIndex];
 
     return Scaffold(

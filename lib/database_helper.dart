@@ -7,17 +7,7 @@ import 'package:music_try/models/playlist_data.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-
 class DatabaseHelper {
-  // static final DatabaseHelper _instance = DatabaseHelper._internal();
-  //
-  // factory DatabaseHelper() {
-  //   return _instance;
-  // }
-  // DatabaseHelper._internal();
-  //
-  // late sqflite.Database _database;
-
   static const String dbName = 'music_app.db';
   static const int dbVersion = 1;
 
@@ -30,54 +20,24 @@ class DatabaseHelper {
   static const String tableTracks = 'tracks';
   static const String columnTrackId = 'id';
   static const String columnPlaylistId = 'playlist_id';
-
+  static const String columnArtist='artist';
+  static const String columnAlbumArtwork='albumArt';
+  static const String columnAudioUrl='audioUrl';
   static const _databaseName = 'music_try.db';
-  //static const _databaseVersion = 1;
-
   static const _playlistTable = 'playlists';
   static const _columnId = 'id';
   static const _columnName = 'name';
   static const _columnDescription = 'description';
   static const _columnCoverImageUrl = 'coverImageUrl';
 
+  late Database _database;
 
-  // Future<void> initializeDatabase() async {
-  //   final databasePath = await sqflite.getDatabasesPath();
-  //   final pathToDatabase = path.join(databasePath, 'music_try.db');
-  //
-  //   _database = await sqflite.openDatabase(
-  //     pathToDatabase,
-  //     version: 1,
-  //     onCreate: (db, version) {
-  //       return db.execute(
-  //         '''
-  //         CREATE TABLE playlists (
-  //           id INTEGER PRIMARY KEY AUTOINCREMENT,
-  //           name TEXT,
-  //           description TEXT,
-  //           coverImageUrl TEXT
-  //         )
-  //         ''',
-  //       );
-  //     },
-  //   );
-  // }
-  //
-  // Future<int> insertPlaylist(PlaylistData playlist) async {
-  //   return await _database.insert(
-  //     'playlists',
-  //     playlist.toMap(),
-  //     conflictAlgorithm: sqflite.ConflictAlgorithm.replace,
-  //   );
-  // }
-  //
-  // Future<List<PlaylistData>> getPlaylists() async {
-  //   final List<Map<String, dynamic>> playlists = await _database.query('playlists');
-  //   return playlists.map((map) => PlaylistData.fromMap(map)).toList();
-  // }
+  DatabaseHelper() {
+    initializeDatabase();
+  }
 
-  late Database? _database;
   static const int _databaseVersion = 2;
+  bool? _isDatabaseInitialized = false;
 
   Future<void> initializeDatabase() async {
     final databasePath = await getDatabasesPath();
@@ -87,125 +47,161 @@ class DatabaseHelper {
       version: _databaseVersion,
       onCreate: _createDatabase,
     );
+    _isDatabaseInitialized = true;
   }
 
   Future<void> _createDatabase(Database db, int version) async {
     await db.execute('''
-      CREATE TABLE $_playlistTable (
-        $_columnId INTEGER PRIMARY KEY AUTOINCREMENT,
-        $_columnName TEXT NOT NULL,
-        $_columnDescription TEXT NOT NULL,
-        $_columnCoverImageUrl TEXT NOT NULL
-      )
-    ''');
+    CREATE TABLE $_playlistTable (
+      $_columnId INTEGER PRIMARY KEY AUTOINCREMENT,
+      $_columnName TEXT NOT NULL,
+      $_columnDescription TEXT NOT NULL,
+      $_columnCoverImageUrl TEXT NOT NULL
+    )
+  ''');
+
+    await db.execute('''
+    CREATE TABLE $tableTracks (
+      $columnTrackId TEXT PRIMARY KEY,
+      $columnName TEXT,
+      $columnArtist TEXT,
+      $columnAlbumArtwork TEXT,
+      $columnAudioUrl TEXT,
+      $columnPlaylistId INTEGER,
+      FOREIGN KEY ($columnPlaylistId) REFERENCES $_playlistTable ($_columnId)
+    )
+  ''');
   }
+
 
   Future<int> insertPlaylist(PlaylistData playlist) async {
     print('track inserte');
-    final db = _database!;
-    final id = await db.insert(_playlistTable, playlist.toMap());
-    return id;
+    final db = _database;
+    if (db != null) {
+      final id = await db.insert(_playlistTable, playlist.toMap());
+      return id;
+    } else {
+      throw Exception('Database not initialized');
+    }
   }
 
   Future<List<PlaylistData>> getPlaylists() async {
-    final db = _database!;
-    final maps = await db.query(_playlistTable);
-    return List.generate(maps.length, (index) {
-      return PlaylistData.fromMap(maps[index]);
-    });
+    final db = _database;
+    if (db != null) {
+      final maps = await db.query(_playlistTable);
+      return List.generate(maps.length, (index) {
+        return PlaylistData.fromMap(maps[index]);
+      });
+    } else {
+      throw Exception('Database not initialized');
+    }
   }
 
-  Future<void> updatePlaylist(PlaylistData playlist) async {
-    final db = _database!;
-    await db.update(
-      _playlistTable,
-      playlist.toMap(),
-      where: '$_columnId = ?',
-      whereArgs: [playlist.id],
-    );
+  Future<void> updatePlaylist(PlaylistData playlist, Track track) async {
+    print('updating');
+    final db = _database;
+    if (db != null) {
+      await db.update(
+        _playlistTable,
+        playlist.toMap(),
+        where: '$_columnId = ?',
+        whereArgs: [playlist.id],
+      );
+      final int playlistId = playlist.id!;
+      await insertTrack(track, playlistId);
+    } else {
+      throw Exception('Database not initialized');
+    }
   }
 
+  Future<void> insertTrack(Track track, int playlistId) async {
+    print('track inserting');
+    final db = _database;
+    if (db != null) {
+      final ii=
+      await db.insert(tableTracks, {
+        columnTrackId: track.id,
+        columnName: track.name,
+        columnArtist: track.artist,
+        columnAlbumArtwork: track.albumArtwork,
+        columnAudioUrl: track.audioUrl,
+        columnPlaylistId: playlistId,
+      }
+      );
+      print(track.name);
+    } else {
+      throw Exception('Database not initialized');
+    }
+  }
 
+  Future<List<Track>> getSongsByPlaylistId(int playlistId) async {
+    final db = _database;
+    if (!_isDatabaseInitialized!) {
+      throw Exception('Database not initialized');
+    }
+    if (db != null) {
+      print('fetching songs');
+      final List<Map<String, dynamic>> maps = await db.rawQuery(
+        '''
+    SELECT * FROM $tableTracks
+    WHERE $columnPlaylistId = ?
+    ''',
+        [playlistId],
+      );
+      return List.generate(maps.length, (index) {
+        return Track(
+          id: maps[index][columnTrackId],
+          name: maps[index][columnName],
+          artist: maps[index][columnArtist],
+          albumArtwork: maps[index][columnAlbumArtwork],
+          audioUrl: maps[index][columnAudioUrl],
+        );
+      });
+    } else {
+      throw Exception('Database not initialized');
+    }
+  }
 
-
-
-  // Future<Database> get database async {
-  //   if (_database != null) {
-  //     return _database!;
+  // Future<List<Track>> getSongsByPlaylistId(int playlistId) async {
+  //   final db = _database;
+  //   if (!_isDatabaseInitialized!) {
+  //     throw Exception('Database not initialized');
   //   }
-  //
-  //   _database = await _initDatabase();
-  //   return _database!;
-  // }
-  //
-  // Future<Database> _initDatabase() async {
-  //   final String databasesPath = await getDatabasesPath();
-  //   final String path = join(databasesPath, dbName);
-  //
-  //   return await openDatabase(
-  //     path,
-  //     version: dbVersion,
-  //     onCreate: _createDatabase,
-  //   );
-  // }
-  //
-  // Future<void> _createDatabase(Database db, int version) async {
-  //   await db.execute('''
-  //     CREATE TABLE $tablePlaylists (
-  //       $columnId INTEGER PRIMARY KEY AUTOINCREMENT,
-  //       $columnName TEXT NOT NULL,
-  //       $columnDescription TEXT NOT NULL,
-  //       $columnCoverImageUrl TEXT NOT NULL
-  //     )
-  //   ''');
-  // }
-  //
-  // Future<List<Playlist>> getPlaylists() async {
-  //   final db = await database;
-  //   final List<Map<String, dynamic>> maps = await db.query(tablePlaylists);
-  //   return List.generate(maps.length, (index) {
-  //     return Playlist.fromMap(maps[index]);
-  //   });
-  // }
-  //
-  //
-  // Future<int> addPlaylist(Playlist playlist) async {
-  //   final db = await database;
-  //   return await db.insert(tablePlaylists, playlist.toMap());
-  // }
-  //
-  //
-  // Future<List<Playlist>> getAllPlaylists() async {
-  //   final db = await database;
-  //   final List<Map<String, dynamic>> maps = await db.query(tablePlaylists);
-  //   return List.generate(maps.length, (index) {
-  //     return Playlist(
-  //       id: maps[index][columnId],
-  //       name: maps[index][columnName],
-  //       description: maps[index][columnDescription], // Add this line
-  //       coverImageUrl: maps[index][columnCoverImageUrl], // Add this line
+  //   if (db != null) {
+  //     print('fetching songs');
+  //     final List<Map<String, dynamic>> maps = await db.rawQuery(
+  //       '''
+  //   SELECT * FROM $tableTracks
+  //   INNER JOIN $_playlistTable ON $tableTracks.$columnPlaylistId = $_playlistTable.$_columnId
+  //   WHERE $_playlistTable.$_columnId = ?
+  //   ''',
+  //       [playlistId],
   //     );
-  //   });
-  // }
-  //
-  // Future<void> addTrackToPlaylist(int playlistId, Track track) async {
-  //   final db = await database;
-  //   await db.insert(
-  //     tableTracks,
-  //     {
-  //       columnTrackId: track.id,
-  //       columnPlaylistId: playlistId,
-  //     },
-  //     conflictAlgorithm: ConflictAlgorithm.replace,
-  //   );
+  //     print(maps);
+  //     return List.generate(maps.length, (index) {
+  //       print('hi');
+  //       return Track(
+  //         id: maps[index][columnTrackId].toString(),
+  //         name: maps[index][columnName],
+  //         artist: maps[index][columnArtist],
+  //         albumArtwork: maps[index][columnAlbumArtwork],
+  //         audioUrl: maps[index][columnAudioUrl],
+  //       );
+  //       print('gg');
+  //     });
+  //   } else {
+  //     throw Exception('Database not initialized');
+  //   }
   // }
 
-  Future<List<Track>> getTracksByPlaylistId(String playlistId,String accessToken) async {
+  Future<List<Track>> getTracksByPlaylistId(
+      String playlistId,
+      String accessToken,
+      ) async {
     final url = Uri.parse('https://api.spotify.com/v1/playlists/$playlistId/tracks');
     print(accessToken);
     print(playlistId);
     print('amar matha');
-    //final accessToken=await ApiService.getAccessToken();
     final response = await http.get(
       url,
       headers: {
@@ -227,19 +223,11 @@ class DatabaseHelper {
           name: trackData['name'],
           artist: trackData['artists'][0]['name'],
           albumArtwork: trackData['album']['images'][0]['url'],
-          audioUrl: trackData['preview_url']?? '',
+          audioUrl: trackData['preview_url'] ?? '',
         );
       });
     } else {
       throw Exception('Failed to fetch tracks');
     }
   }
-// Future<void> removeTrackFromPlaylist(int playlistId, String trackId) async {
-//   final db = await database;
-//   await db.delete(
-//     tableTracks,
-//     where: '$columnTrackId = ? AND $columnPlaylistId = ?',
-//     whereArgs: [trackId, playlistId],
-//   );
-// }
 }
