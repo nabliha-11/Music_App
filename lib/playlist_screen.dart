@@ -31,7 +31,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
     print(widget.playlist.tracks);
   }
 
-  void _playSong(List<Track> track) {
+  void _playSong(List<Track> track,initialTraackIndex) {
+
     print('here');
     print(track);
     Navigator.push(
@@ -39,7 +40,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
       MaterialPageRoute(
         builder: (context) => PlaylistPlayerPage(
           playlist: track,
-          initialTrackIndex: 0,
+          initialTrackIndex: initialTraackIndex,
         ),
       ),
     );
@@ -71,10 +72,11 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
               itemBuilder: (context, index) {
                 final track = snapshot.data![index];
                 return ListTile(
+                  leading: Image.network(track.albumArtwork),
                   title: Text(track.name),
                   subtitle: Text(track.artist),
                   onTap: () {
-                    _playSong(snapshot.data as List<Track>); // Call _playSong method when tapped
+                    _playSong(snapshot.data as List<Track>,index); // Call _playSong method when tapped
                   },
                 );
               },
