@@ -128,21 +128,25 @@ class _PlaylistPlayerPageState extends State<PlaylistPlayerPage> {
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           title: Text('Musicana'),
+          backgroundColor: Colors.blueGrey[300],
         ),
         body: Center(
           child: Padding(
             padding:  EdgeInsets.only(bottom: kToolbarHeight),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.network(
-                  track.albumArtwork,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Image.network(
-                      'https://i.pinimg.com/originals/31/fe/56/31fe56e7053b5e9085373c666bc252e3.jpg', // Replace with your default image URL
-                      fit: BoxFit.cover,
-                    );
-                  },
+                Expanded(
+                  child: Image.network(
+                    track.albumArtwork,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.network(
+                        'https://i.pinimg.com/originals/31/fe/56/31fe56e7053b5e9085373c666bc252e3.jpg', // Replace with your default image URL
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  ),
                 ),
                 SizedBox(height: 20),
                 Text(

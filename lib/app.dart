@@ -10,7 +10,7 @@ class MusicApp extends StatelessWidget {
     return MaterialApp(
       title: 'Musicana',
       theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
+        // primarySwatch: Colors.blueGrey,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       initialRoute: '/',

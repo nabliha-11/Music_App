@@ -51,6 +51,7 @@ class _TrendingSongState extends State<TrendingSong> {
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           title: Text('Featured Songs'),
+          backgroundColor: Colors.blueGrey[300],
         ),
         body: Column(
           children: [

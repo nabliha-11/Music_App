@@ -65,6 +65,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           title: Text(widget.playlist.name),
+          backgroundColor: Colors.blueGrey[300],
         ),
 
         body: FutureBuilder<List<Track>>(

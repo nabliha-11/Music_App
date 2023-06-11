@@ -51,6 +51,7 @@ class _NewReleasedSongState extends State<NewReleasedSong> {
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           title: Text('Top Hits'),
+          backgroundColor: Colors.blueGrey[300],
         ),
         body: Column(
           children: [

@@ -146,7 +146,7 @@ class _HomeTabState extends State<HomeTab> {
                 child: Text(
                   'Top Hits',
                   style: TextStyle(
-                    fontSize: 22,
+                    fontSize: 23,
                     fontWeight: FontWeight.bold,
                     color: Colors.blueGrey[700],
                   ),
@@ -186,7 +186,7 @@ class _HomeTabState extends State<HomeTab> {
                 child: Text(
                   'Featured Playlists',
                   style: TextStyle(
-                    fontSize: 22,
+                    fontSize: 23,
                     fontWeight: FontWeight.bold,
                     color: Colors.blueGrey[700],
                   ),

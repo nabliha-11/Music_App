@@ -29,6 +29,7 @@ class _HomePageState extends State<HomePage> {
           padding: EdgeInsets.only(left: 10.0), // Add left padding to the app bar title
           child: Text('Musicana'),
         ),
+        backgroundColor: Colors.blueGrey[300],
       ),
       body: _tabs[_currentIndex],
       // backgroundColor: Colors.black,

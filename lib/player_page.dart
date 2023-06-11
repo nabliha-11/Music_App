@@ -97,12 +97,18 @@ class _PlayerPageState extends State<PlayerPage> {
               onPressed: () async {
                 await _createNewPlaylist(context);
               },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.blueGrey[700]!), // Replace with the desired color
+              ),
               child: Text('Create New Playlist'),
             ),
             ElevatedButton(
               onPressed: () async {
                 await _saveSongToPlaylist(track);
               },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.blueGrey[700]!), // Replace with the desired color
+              ),
               child: Text('Save to Playlist'),
             ),
           ],
@@ -170,6 +176,9 @@ class _PlayerPageState extends State<PlayerPage> {
 
                 Navigator.of(context).pop();
               },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.blueGrey[700]!), // Replace with the desired color
+              ),
               child: Text('Create'),
             ),
           ],
@@ -263,21 +272,25 @@ class _PlayerPageState extends State<PlayerPage> {
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           title: Text('Musicana'),
+          backgroundColor: Colors.blueGrey[300],
         ),
         body: Center(
           child: Padding(
             padding:  EdgeInsets.only(bottom: kToolbarHeight), // Add custom top padding,
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.network(
-                  track.albumArtwork,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Image.network(
-                      'https://i.pinimg.com/originals/31/fe/56/31fe56e7053b5e9085373c666bc252e3.jpg', // Replace with your default image URL
-                      fit: BoxFit.cover,
-                    );
-                  },
+                Expanded(
+                  child: Image.network(
+                    track.albumArtwork,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.network(
+                        'https://i.pinimg.com/originals/31/fe/56/31fe56e7053b5e9085373c666bc252e3.jpg', // Replace with your default image URL
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  ),
                 ),
                 SizedBox(height: 20),
                 Text(
