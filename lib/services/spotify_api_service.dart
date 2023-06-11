@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:music_try/models/playlist.dart';
 import 'package:music_try/models/track.dart';
-import 'package:music_try/models/album.dart';
+
 
 class SpotifyApiService {
   static const String clientId = '8031d3b5a4e14fedbe67f6a6d5822f88';
@@ -195,100 +195,100 @@ class SpotifyApiService {
     }
   }
 
-  static Future<List<Album>> fetchNewReleasedAlbums() async {
-    final accessToken = await getAccessToken();
-
-    final url = 'https://api.spotify.com/v1/browse/new-releases?country=BD';
-
-    final response = await http.get(
-      Uri.parse(url),
-      headers: {
-        'Authorization': 'Bearer $accessToken',
-        'Content-Type': 'application/json',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-
-      if (data != null && data.containsKey('albums') && data['albums'].containsKey('items')) {
-        final albumsData = data['albums']['items'];
-        List<Album> albums = [];
-
-        for (var albumData in albumsData) {
-          final albumId = albumData['id'] ?? '';
-          final albumName = albumData['name'] ?? '';
-          final albumArtwork = albumData['images'] != null && albumData['images'].isNotEmpty
-              ? albumData['images'][0]['url']
-              : '';
-
-          final tracks = await fetchTracksByAlbumId(albumId); // Fetch tracks for the album
-
-          final album = Album(
-            id: albumId,
-            name: albumName,
-            artwork: albumArtwork,
-            tracks: tracks,
-          );
-
-          albums.add(album);
-        }
-
-        return albums;
-      } else {
-        throw Exception('Invalid response format: albums/items not found');
-      }
-    } else {
-      throw Exception('Failed to fetch new released albums: ${response.statusCode}');
-    }
-  }
-  static Future<List<Track>> fetchTracksByAlbumId(String albumId) async {
-    final accessToken = await getAccessToken();
-
-    final url = 'https://api.spotify.com/v1/albums/$albumId/tracks';
-
-    final response = await http.get(
-      Uri.parse(url),
-      headers: {
-        'Authorization': 'Bearer $accessToken',
-        'Content-Type': 'application/json',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-
-      if (data != null && data.containsKey('items')) {
-        final tracksData = data['items'];
-        List<Track> tracks = [];
-
-        for (var trackData in tracksData) {
-          final trackId = trackData['id'] ?? '';
-          final trackName = trackData['name'] ?? '';
-          final trackArtist = trackData['artists']?.isEmpty == false ? trackData['artists'][0]['name'] : '';
-          final trackAlbumArtwork = trackData['album']['images']?.isEmpty == false ? trackData['album']['images'][0]['url'] : '';
-          final trackAudioUrl = trackData['preview_url'] ?? '';
-
-          final track = Track(
-            id: trackId,
-            name: trackName,
-            artist: trackArtist,
-            albumArtwork: trackAlbumArtwork,
-            audioUrl: trackAudioUrl,
-          );
-
-          tracks.add(track);
-        }
-
-        return tracks;
-      } else {
-        throw Exception('Invalid response format: items not found');
-      }
-    } else {
-      throw Exception('Failed to fetch tracks for album: $albumId, ${response.statusCode}');
-    }
-  }
-
+  // static Future<List<Album>> fetchNewReleasedAlbums() async {
+  //   final accessToken = await getAccessToken();
+  //
+  //   final url = 'https://api.spotify.com/v1/browse/new-releases?country=BD';
+  //
+  //   final response = await http.get(
+  //     Uri.parse(url),
+  //     headers: {
+  //       'Authorization': 'Bearer $accessToken',
+  //       'Content-Type': 'application/json',
+  //     },
+  //   );
+  //
+  //   if (response.statusCode == 200) {
+  //     final data = jsonDecode(response.body);
+  //
+  //     if (data != null && data.containsKey('albums') && data['albums'].containsKey('items')) {
+  //       final albumsData = data['albums']['items'];
+  //       List<Album> albums = [];
+  //
+  //       for (var albumData in albumsData) {
+  //         final albumId = albumData['id'] ?? '';
+  //         final albumName = albumData['name'] ?? '';
+  //         final albumArtwork = albumData['images'] != null && albumData['images'].isNotEmpty
+  //             ? albumData['images'][0]['url']
+  //             : '';
+  //
+  //         final tracks = await fetchTracksByAlbumId(albumId); // Fetch tracks for the album
+  //
+  //         final album = Album(
+  //           id: albumId,
+  //           name: albumName,
+  //           artwork: albumArtwork,
+  //           tracks: tracks,
+  //         );
+  //
+  //         albums.add(album);
+  //       }
+  //
+  //       return albums;
+  //     } else {
+  //       throw Exception('Invalid response format: albums/items not found');
+  //     }
+  //   } else {
+  //     throw Exception('Failed to fetch new released albums: ${response.statusCode}');
+  //   }
+  // }
+  // static Future<List<Track>> fetchTracksByAlbumId(String albumId) async {
+  //   final accessToken = await getAccessToken();
+  //
+  //   final url = 'https://api.spotify.com/v1/albums/$albumId/tracks';
+  //
+  //   final response = await http.get(
+  //     Uri.parse(url),
+  //     headers: {
+  //       'Authorization': 'Bearer $accessToken',
+  //       'Content-Type': 'application/json',
+  //     },
+  //   );
+  //
+  //   if (response.statusCode == 200) {
+  //     final data = jsonDecode(response.body);
+  //
+  //     if (data != null && data.containsKey('items')) {
+  //       final tracksData = data['items'];
+  //       List<Track> tracks = [];
+  //
+  //       for (var trackData in tracksData) {
+  //         final trackId = trackData['id'] ?? '';
+  //         final trackName = trackData['name'] ?? '';
+  //         final trackArtist = trackData['artists']?.isEmpty == false ? trackData['artists'][0]['name'] : '';
+  //         final trackAlbumArtwork = trackData['album']['images']?.isEmpty == false ? trackData['album']['images'][0]['url'] : '';
+  //         final trackAudioUrl = trackData['preview_url'] ?? '';
+  //
+  //         final track = Track(
+  //           id: trackId,
+  //           name: trackName,
+  //           artist: trackArtist,
+  //           albumArtwork: trackAlbumArtwork,
+  //           audioUrl: trackAudioUrl,
+  //         );
+  //
+  //         tracks.add(track);
+  //       }
+  //
+  //       return tracks;
+  //     } else {
+  //       throw Exception('Invalid response format: items not found');
+  //     }
+  //   } else {
+  //     throw Exception('Failed to fetch tracks for album: $albumId, ${response.statusCode}');
+  //   }
+  // }
+  //
 
 
 }
