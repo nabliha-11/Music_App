@@ -60,6 +60,41 @@ class SpotifyApiService {
       throw Exception('Failed to fetch featured playlists');
     }
   }
+
+  static Future<List<Playlist>> fetchNewReleasedPlaylists() async {
+    final accessToken = await getAccessToken();
+
+    final url = 'https://api.spotify.com/v1/browse/categories/pop/playlists';
+
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+        'Content-Type': 'application/json',
+      },
+    );
+    print("New release here");
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print(response.body);
+      List<Playlist> playlists = [];
+      for (var playlistData in data['playlists']['items']) {
+        playlists.add(Playlist(
+          id: playlistData['id'],
+          name: playlistData['name'],
+          description: playlistData['description'],
+          coverImageUrl: playlistData['images'][0]['url'],
+        ));
+        print("here1");
+      }
+      print("here2");
+      print(playlists.length);
+      return playlists;
+    } else {
+      throw Exception('Failed to fetch new released playlists1');
+    }
+  }
+
   static Future<List<Track>> fetchTracksByPlaylistId(String playlistId) async {
     final url = Uri.parse('$baseUrl/playlists/$playlistId/tracks');
 

@@ -4,8 +4,10 @@ import 'package:music_try/player_page.dart';
 import 'package:music_try/services/spotify_api_service.dart';
 import 'package:music_try/models/track.dart';
 import 'package:music_try/database_helper.dart';
+import 'package:music_try/tabs/slider_widget.dart';
 import 'package:music_try/trending.dart';
 
+import '../new_released.dart';
 import '../services/api_service.dart';
 
 class HomeTab extends StatefulWidget {
@@ -15,11 +17,13 @@ class HomeTab extends StatefulWidget {
 
 class _HomeTabState extends State<HomeTab> {
   List<Playlist> featuredPlaylists = [];
+  List<Playlist> newReleasedPlaylists = [];
 
   @override
   void initState() {
     super.initState();
     _fetchFeaturedPlaylists();
+    _fetchNewReleasedPlaylists();
   }
 
   void _fetchFeaturedPlaylists() async {
@@ -68,6 +72,53 @@ class _HomeTabState extends State<HomeTab> {
     }
   }
 
+  void _fetchNewReleasedPlaylists() async {
+    try {
+      final playlists = await SpotifyApiService.fetchNewReleasedPlaylists();
+      setState(() {
+        newReleasedPlaylists = playlists;
+        // print(newReleasedPlaylists.length);
+      });
+    } catch (error) {
+      print('Failed to fetch new released playlists: $error');
+    }
+  }
+
+  void _openNewReleasedPlaylist(Playlist playlist) async {
+    try {
+      if (playlist == null) {
+        print('Playlist is null');
+        return;
+      }
+
+      final String accessToken = await ApiService.getAccessToken();
+      // print('hi');
+      // print(accessToken);
+      // print(playlist.id);
+      // print('why');
+      final List<Track> tracks = await DatabaseHelper()
+          .getTracksByPlaylistId(playlist.id, accessToken);
+      print(tracks.length);
+      if (tracks == null || tracks.isEmpty) {
+        print('No tracks available');
+        return;
+      }
+      final int initialTrackIndex = 0;
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => NewReleasedSong(
+            playlist: tracks ?? [], // Use empty list if tracks is null
+            initialTrackIndex: initialTrackIndex,
+          ),
+        ),
+      );
+    } catch (error) {
+      print('Failed to open playlist: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -84,33 +135,71 @@ class _HomeTabState extends State<HomeTab> {
           colors: [Colors.white, Colors.blueGrey])),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        // appBar: AppBar(
-        //   // title: Text('Home'),
-        // ),
-        body: GridView.builder(
-          padding: EdgeInsets.all(16),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-          ),
-          itemCount: featuredPlaylists.length,
-          itemBuilder: (context, index) {
-            final playlist = featuredPlaylists[index];
-            return GestureDetector(
-                onTap: () {
-                  _openPlaylist(playlist);
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    image: DecorationImage(
-                      image: NetworkImage(playlist.coverImageUrl),
-                      fit: BoxFit.cover,
-                    ),
+        body: SingleChildScrollView(
+          child: Container(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height,
+            ),
+            child: Column(
+              children: [
+                SizedBox(height: 10),
+                Container(
+                  height: 200,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: newReleasedPlaylists.length,
+                    itemBuilder: (context, index) {
+                      final playlist1 = newReleasedPlaylists[index];
+                      return GestureDetector(
+                        onTap: () {
+                          _openNewReleasedPlaylist(playlist1);
+                        },
+                        child: Container(
+                          width: 150,
+                          margin: EdgeInsets.symmetric(horizontal: 8),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            image: DecorationImage(
+                              image: NetworkImage(playlist1.coverImageUrl),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                ));
-          },
+                ),
+                GridView.builder(
+                  padding: EdgeInsets.all(16),
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                  ),
+                  itemCount: featuredPlaylists.length,
+                  itemBuilder: (context, index) {
+                    final playlist = featuredPlaylists[index];
+                    return GestureDetector(
+                      onTap: () {
+                        _openPlaylist(playlist);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          image: DecorationImage(
+                            image: NetworkImage(playlist.coverImageUrl),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
