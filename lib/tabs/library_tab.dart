@@ -76,6 +76,11 @@ class _LibraryTabState extends State<LibraryTab> {
                     onPressed: () {
                       Navigator.pop(context); // Close the dialog
                     },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                        Colors.blueGrey[200]!,
+                      ),
+                    ),
                     child: Text('Cancel'),
                   ),
                   ElevatedButton(
@@ -85,7 +90,7 @@ class _LibraryTabState extends State<LibraryTab> {
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
-                        Colors.red,
+                        Colors.blueGrey[700]!,
                       ),
                     ),
                     child: Text('Delete'),
