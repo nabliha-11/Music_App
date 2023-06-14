@@ -276,7 +276,7 @@ class _PlayerPageState extends State<PlayerPage> {
         ),
         body: Center(
           child: Padding(
-            padding:  EdgeInsets.only(bottom: kToolbarHeight), // Add custom top padding,
+            padding: EdgeInsets.only(bottom: kToolbarHeight), // Add custom top padding,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -337,16 +337,48 @@ class _PlayerPageState extends State<PlayerPage> {
                           onPressed: _skipToPreviousTrack,
                         ),
                         SizedBox(width: 16),
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.black54,
-                          ),
-                          child: IconButton(
-                            iconSize: 44,
-                            icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
-                            onPressed: _playPause,
-                            color: Colors.white,
+                        AnimatedSwitcher(
+                          duration: Duration(milliseconds: 150),
+                          transitionBuilder: (child, animation) {
+                            final curvedAnimation = CurvedAnimation(
+                              parent: animation,
+                              curve: Curves.easeInOut,
+                            );
+                            return RotationTransition(
+                              turns: curvedAnimation,
+                              child: child,
+                            );
+                          },
+                          child: _isPlaying
+                              ? GestureDetector(
+                            key: ValueKey(Icons.pause),
+                            onTap: _playPause,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.black54,
+                              ),
+                              child: Icon(
+                                Icons.pause,
+                                size: 44,
+                                color: Colors.white,
+                              ),
+                            ),
+                          )
+                              : GestureDetector(
+                            key: ValueKey(Icons.play_arrow),
+                            onTap: _playPause,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.black54,
+                              ),
+                              child: Icon(
+                                Icons.play_arrow,
+                                size: 44,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
                         SizedBox(width: 16),
@@ -376,6 +408,7 @@ class _PlayerPageState extends State<PlayerPage> {
       ),
     );
   }
+
 
 
 
